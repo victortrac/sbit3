@@ -1,0 +1,7 @@
+sbit3 is a tornado app and a client script that allows you to easily upload
+a file from any command line into Amazon's S3 service. It provides you 
+with a shorterned, time-limited URL that you can share to anyone.
+
+I created it because I often am SSH'd 2-3x into a private network and 
+wanted to easily pull out files, e.g. a log file or sql dump.
+

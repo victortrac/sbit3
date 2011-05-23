@@ -32,6 +32,7 @@ class PostHandler(tornado.web.RequestHandler):
         return signature
 
     def get(self):
+        # TODO: Accept an expiration timestamp on the file and store in sdb
         conditions = { "bucket" : settings.bucket,
                        "acl" : settings.acl,
                        "success_action_redirect" : settings.site_url + "/f" }
@@ -65,7 +66,8 @@ class DownloadHandler(tornado.web.RequestHandler):
         self.bucket = settings.bucket
 
     def get(self, shortUrl):
-        # Turn short URL in to s3 key
+        # TODO: Validate request time with expiration in sdb before
+        #       generating short URL
         s3_key_name = self.sdb_conn.get_key(shortUrl)[0]
         if s3_key_name:
             self.redirect(self.s3_conn.get_url(s3_key_name))

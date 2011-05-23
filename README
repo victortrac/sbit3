@@ -5,3 +5,14 @@ with a shorterned, time-limited URL that you can share to anyone.
 I created it because I often am SSH'd 2-3x into a private network and 
 wanted to easily pull out files, e.g. a log file or sql dump.
 
+Server dependencies:
+ * Python 2.6
+ * Tornado
+ * Boto
+ * Amazon AWS account with S3 & SDB
+
+Client dependencies (to upload files):
+ * Linux/OSX/Windows (cygwin) with python2.6
+
+Download dependencies:
+ * Any system with HTTP abilities

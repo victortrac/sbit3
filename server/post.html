@@ -1,0 +1,22 @@
+<html> 
+  <head>
+    <title>S3 POST Form</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body> 
+      <form action="https://{{ conditions["bucket"] }}.s3.amazonaws.com" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="key" value="uploads/${filename}">
+      <input type="hidden" name="AWSAccessKeyId" value="{{ aws_access_id }}"> 
+      <input type="hidden" name="acl" value="{{ conditions["acl"] }}"> 
+      <input type="hidden" name="success_action_redirect" value="{{ conditions["success_action_redirect"] }}">
+      <input type="hidden" name="policy" value="{{ policy_document }}">
+      <input type="hidden" name="signature" value="{{ signature }}">
+
+      File to upload to S3: 
+      <input name="file" type="file"> 
+      <br> 
+      <input type="submit" value="Upload File to S3"> 
+    </form> 
+  </body>
+</html>

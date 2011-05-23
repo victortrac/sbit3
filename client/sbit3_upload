@@ -1,0 +1,22 @@
+#/usr/bin/env python
+
+# This script is used to upload a file to sbit3
+
+import sys
+
+def usage():
+    print """
+    Uploads a file to sbit3 and returns a shortend URL.
+
+    Usage: %s local_file
+
+    Options:
+    -e, --expires [n]       Number of hours this file is valid on s3
+    -s, --server            sbit3 server URL
+    --encrypt [password]    Encrypt file before sending to sbit3
+
+    Example:
+    user@host: ~$ ./sbit3_upload my_log_file.log -e 24
+    http://sbit3.ly/d/xaZX82
+
+    """ % sys.argv[0]

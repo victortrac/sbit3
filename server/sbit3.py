@@ -18,7 +18,7 @@ class MainHandler(tornado.web.RequestHandler):
 class PostHandler(tornado.web.RequestHandler):
     def _generate_policy_doc(self, conditions, expiration=None):
         if not expiration:
-            expiration = datetime.datetime.today() + datetime.timedelta(days=5)
+            expiration = datetime.datetime.today() + datetime.timedelta(hours=1)
         conditions = [ { "bucket" : conditions["bucket"] },
                        [ "starts-with", "$key", "uploads/"],
                        { "acl" : conditions["acl"] },
@@ -53,7 +53,12 @@ class GenerateUrlHandler(tornado.web.RequestHandler):
     def get(self, parameters):
         _key = self.get_argument('key')
         _etag = self.get_argument('etag')
-        _short_url = self.sdb_conn.add_file(_key, _etag)
+        try:
+            _expires = self.get_argument('expires')
+        except:
+            # expires not set, using default of 60 minutes
+            _expires = None
+        _short_url = self.sdb_conn.add_file(_key, _etag, _expires)
         self.write(settings.site_url + '/d/' + _short_url)
 
 class DownloadHandler(tornado.web.RequestHandler):
@@ -66,18 +71,21 @@ class DownloadHandler(tornado.web.RequestHandler):
         self.bucket = settings.bucket
 
     def get(self, shortUrl):
-        # TODO: Validate request time with expiration in sdb before
-        #       generating short URL
-        s3_key_name = self.sdb_conn.get_key(shortUrl)[0]
-        if s3_key_name:
-            self.redirect(self.s3_conn.get_url(s3_key_name))
+        s3info = self.sdb_conn.get_key(shortUrl)
+        if s3info:
+            s3_key_name = s3info[0]
+            s3_expiration = s3info[1]['expireTimestamp']
+            if datetime.datetime.now() < datetime.datetime.strptime(s3_expiration, "%Y-%m-%d %H:%M:%S.%f"):
+                self.redirect(self.s3_conn.get_url(s3_key_name))
+            else:
+                raise tornado.web.HTTPError(403)
         else:
             raise tornado.web.HTTPError(404)
 
 application = tornado.web.Application([
     (r"/", MainHandler),
     (r"/u", PostHandler),
-    (r"/f(.*)", GenerateUrlHandler),
+    (r"/f/(.*)", GenerateUrlHandler),
     (r"/d/(.*)", DownloadHandler),
 ])
 

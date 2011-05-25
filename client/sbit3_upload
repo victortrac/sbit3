@@ -17,6 +17,20 @@ def usage():
 
     Example:
     user@host: ~$ ./sbit3_upload my_log_file.log -e 24
-    http://sbit3.ly/d/xaZX82
+    http://sbit3.me/d/xaZX82
 
     """ % sys.argv[0]
+
+"""
+On Upload:
+1) Client makes an http request to http://server/u/[min], where [min] is expiration timestamp of file in minutes
+2) Server generates and signs a specially crafted form that allows posting to S3
+3) Client uploads file to S3
+4) On upload success, Server generates a short URL
+
+On Download:
+1) User makes HTTP request to short URL
+2) Server verifies validity of URL and expiration timestamp
+3) If valid, Server makes API request to S3 to create a URL to the file that is only valid for 60 seconds
+
+"""

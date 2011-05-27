@@ -19,3 +19,6 @@ Download dependencies:
 
 TODO:
  * Write client
+ * S3 cleanup code once files are expired
+ * Allow client-side encryption pre-uplaod
+

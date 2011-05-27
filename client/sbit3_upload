@@ -2,26 +2,16 @@
 
 # This script is used to upload a file to sbit3
 
+import pdb
 import sys
-
-def usage():
-    print """
-    Uploads a file to sbit3 and returns a shortend URL.
-
-    Usage: %s local_file
-
-    Options:
-    -e, --expires [n]       Number of hours this file is valid on s3
-    -s, --server            sbit3 server URL
-    --encrypt [password]    Encrypt file before sending to sbit3
-
-    Example:
-    user@host: ~$ ./sbit3_upload my_log_file.log -e 24
-    http://sbit3.me/d/xaZX82
-
-    """ % sys.argv[0]
+import urllib2
+import httplib, mimetypes
+from optparse import OptionParser
+from HTMLParser import HTMLParser
 
 """
+How this works
+
 On Upload:
 1) Client makes an http request to http://server/u/[min], where [min] is expiration timestamp of file in minutes
 2) Server generates and signs a specially crafted form that allows posting to S3
@@ -32,5 +22,60 @@ On Download:
 1) User makes HTTP request to short URL
 2) Server verifies validity of URL and expiration timestamp
 3) If valid, Server makes API request to S3 to create a URL to the file that is only valid for 60 seconds
-
 """
+
+class FormParser(HTMLParser):
+    def __init__(self, *args, **kwargs):
+        HTMLParser.__init__(self)
+        self.form = {}
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'form':
+            attribs = dict(attrs)
+            for k,v in attribs.iteritems():
+                self.form[k] = v
+            self.form['inputs'] = []
+        if tag == "input":
+            input = dict(attrs)
+            self.form['inputs'].append(input)
+
+class PostEncoder(object):
+    def __init__(self, filename):
+        headers = { 'User-Agent' : 'sbit3 client',
+                    'Content-Type' : self._guess_mime_type(filename) }
+
+    def _guess_mime_type(self, filename):
+        return mimetypes.guess_type(filename)[0] or 'multipart/form-data'
+
+if __name__ == "__main__":
+    parser = OptionParser(usage="Usage: %prog [options] file")
+    parser.add_option('-s', '--server',
+                        action='store', dest='server', default='http://sbit3.me', type="string",
+                        help='sbit3 server to use. Defaults to http://sbit3.me')
+    parser.add_option('-e', '--expires', '--ttl',
+                        action='store', dest='expires', default=10, type="int",
+                        help='Number of minutes to keep URL active')
+    parser.add_option('--encrypt',
+                        action='store_true', dest='encrypt', default=False,
+                        help="Use this flag to encrypt data before uploading.")
+    (options, args) = parser.parse_args()
+
+    if len(args) == 1:
+        filename = args[0]
+    else:
+        print "Invalid number of arguments."
+        sys.exit(1)
+
+    # Try to read file
+    try:
+        fp = open(filename, 'r')
+    except IOError as e:
+        print "Unable to read file %s" % filename
+        sys.exit(1)
+
+    postform_url = options.server + "/u/" + str(options.expires)
+    postform = urllib2.urlopen(postform_url).read()
+    formparser = FormParser()
+    formparser.feed(postform)
+    # Generate multipart POST
+    

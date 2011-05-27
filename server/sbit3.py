@@ -110,5 +110,5 @@ application = tornado.web.Application([
 
 
 if __name__ == "__main__":
-    application.listen(8080)
+    application.listen(settings.site_url)
     tornado.ioloop.IOLoop.instance().start()

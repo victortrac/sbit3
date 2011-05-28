@@ -18,7 +18,16 @@ Download dependencies:
  * Any system with HTTP abilities
 
 TODO:
- * Write client
+ * Add some error handling
  * S3 cleanup code once files are expired
  * Allow client-side encryption pre-uplaod
 
+Usage:
+1) Use sbit3_upload to upload the file:
+shell $: ./sbit3_upload your_file.zip
+http://sbit3.me/d/aV8gt
+
+2) Share the short URL with someone. If they use a command line, they'll
+need to pass curl the -L (follow redirects) and to specify a filename 
+since curl doesn't guess the filename like browsers ("-o output.zip"):
+shell $: curl -L http://sbit3.me/d/aV8gt -o output.zip

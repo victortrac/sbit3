@@ -4,6 +4,7 @@
 
 import pdb
 import sys
+import os
 import urllib2
 import httplib, mimetypes
 from optparse import OptionParser
@@ -77,5 +78,32 @@ if __name__ == "__main__":
     postform = urllib2.urlopen(postform_url).read()
     formparser = FormParser()
     formparser.feed(postform)
+
     # Generate multipart POST
-    
+    boundary = '------sbit3BoundaryS5mPkhvO1BqERzU'
+    r_payload = []
+    for input in formparser.form['inputs']:
+        if ('name' in input) and (input['name'] != 'file'):
+            r_payload.append('--' + boundary)
+            r_payload.append('Content-Disposition: form-data; name="%s"' % input['name'])
+            r_payload.append('')
+            r_payload.append(input['value'])
+    r_payload.append('--' + boundary)
+    r_payload.append('Content-Disposition: form-data; name="file"; filename="%s"' % os.path.basename(filename))
+    r_payload.append('Content-Type: %s' % (mimetypes.guess_type(filename)[0] or 'application/octet-stream'))
+    r_payload.append('')
+    r_payload.append(fp.read())
+    r_payload.append("--" + boundary + "--")
+
+    body = '\r\n'.join(r_payload)
+    content_type = 'multipart/form-data; boundary=%s' % boundary
+
+    h = httplib.HTTPConnection(formparser.form['action'], 80)
+    h.putrequest('POST', formparser.form['action'])
+    h.putheader('content-type', content_type)
+    h.putheader('content-length', str(len(body)))
+    h.endheaders()
+    h.send(body)
+    response = h.getresponse()
+    redirected_url = response.getheader('location')
+    print urllib2.urlopen(redirected_url).read()

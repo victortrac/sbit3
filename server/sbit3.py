@@ -38,7 +38,7 @@ class PostHandler(tornado.web.RequestHandler):
             # Set max expiration to 7200 minutes (5 days)
             if not 0 < expiration < 7200:
                 raise tornado.web.HTTPError(403)
-            _expireTimestamp = datetime.datetime.now() + datetime.timedelta(minutes=expiration)
+            _expireTimestamp = datetime.datetime.utcnow() + datetime.timedelta(minutes=expiration)
         except ValueError:
             raise tornado.web.HTTPError(403)
 
@@ -94,7 +94,7 @@ class DownloadHandler(tornado.web.RequestHandler):
         if s3info:
             s3_key_name = s3info[1]['key']
             s3_expiration = s3info[1]['expireTimestamp']
-            if datetime.datetime.now() < datetime.datetime.strptime(s3_expiration, "%Y-%m-%d %H:%M:%S.%f"):
+            if datetime.datetime.utcnow() < datetime.datetime.strptime(s3_expiration, "%Y-%m-%d %H:%M:%S.%f"):
                 self.redirect(self.s3_conn.get_url(s3_key_name))
             else:
                 raise tornado.web.HTTPError(403)

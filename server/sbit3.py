@@ -19,12 +19,12 @@ class PostHandler(tornado.web.RequestHandler):
     def _generate_policy_doc(self, conditions, expiration=None):
         if not expiration:
             # Sets a policy of 15 minutes to upload file
-            expiration = datetime.datetime.now() + datetime.timedelta(minutes=15)
+            expiration = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
         conditions = [ { "bucket" : conditions["bucket"] },
                        [ "starts-with", "$key", "uploads/"],
                        { "acl" : conditions["acl"] },
                        { "success_action_redirect" : conditions["success_action_redirect"] } ]
-        conditions_json = json.dumps({ "expiration" : expiration.strftime("%Y-%m-%dT%M:%H:%SZ"),
+        conditions_json = json.dumps({ "expiration" : expiration.strftime("%Y-%m-%dT%H:%M:%SZ"),
                                        "conditions" : conditions })
         return base64.b64encode(conditions_json)
 

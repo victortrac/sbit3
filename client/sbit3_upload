@@ -106,4 +106,7 @@ if __name__ == "__main__":
     h.send(body)
     response = h.getresponse()
     redirected_url = response.getheader('location')
-    print urllib2.urlopen(redirected_url).read()
+    if redirected_url:
+        print urllib2.urlopen(redirected_url).read()
+    else:
+        print response.read()

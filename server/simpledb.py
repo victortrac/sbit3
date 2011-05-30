@@ -49,13 +49,13 @@ class SimpleDBConnection(object):
         except Exception, e:
             raise(e)
 
-    def get_key(self, _url):
+    def get_key(self, url):
         try:
             # Validate url against charspace
-            if filter(lambda x: x not in self.charSpace, _url):
+            if filter(lambda x: x not in self.charSpace, url):
                 raise Exception("Invalid characters in short URL")
             rs = self.domain.select("SELECT * FROM `%s` where `shortUrl` = '%s'" %
-                            (settings.sdb_domain, _url))
+                            (settings.sdb_domain, url))
             results = []
             for item in rs:
                 results.append((item.name, item))
@@ -65,9 +65,17 @@ class SimpleDBConnection(object):
             elif len(results) is 0:
                 return None
             else:
-                raise Exception("More than one matching result found. Possible shortURL collision.")
+                raise Exception("More than one matching result found. ShortURL collision.")
         except Exception, e:
             raise(e)
+
+    def increment_counter(self, item):
+        try:
+            _item = item[0]
+            _attributes = item[1]
+            self.domain.put_attributes(_item, { 'downloadCount' : int(_attributes['downloadCount']) + 1 })
+        except Exception, e:
+            raise Exception("Unable to update counter: %s" % e)
 
     def _get_domain(self, domain):
         try:

@@ -66,10 +66,10 @@ class GenerateUrlHandler(tornado.web.RequestHandler):
         from simpledb import SimpleDBConnection
         self.sdb_conn = SimpleDBConnection()
 
-    def get(self, _uuid):
+    def get(self, uuid):
         # Check uuid
-        if _uuid.isalnum() and len(_uuid) == 32:
-            item = self.sdb_conn.get_uuid(_uuid)
+        if uuid.isalnum() and len(uuid) == 32:
+            item = self.sdb_conn.get_uuid(uuid)
         else:
             raise tornado.web.HTTPError(403)
 
@@ -90,11 +90,13 @@ class DownloadHandler(tornado.web.RequestHandler):
         self.bucket = settings.bucket
 
     def get(self, shortUrl):
-        s3info = self.sdb_conn.get_key(shortUrl)
-        if s3info:
-            s3_key_name = s3info[1]['key']
-            s3_expiration = s3info[1]['expireTimestamp']
+        sdb_item = self.sdb_conn.get_key(shortUrl)
+        if sdb_item:
+            s3_key_name = sdb_item[1]['key']
+            s3_expiration = sdb_item[1]['expireTimestamp']
             if datetime.datetime.utcnow() < datetime.datetime.strptime(s3_expiration, "%Y-%m-%d %H:%M:%S.%f"):
+                # increment download count
+                self.sdb_conn.increment_counter(sdb_item)
                 self.redirect(self.s3_conn.get_url(s3_key_name))
             else:
                 raise tornado.web.HTTPError(403)

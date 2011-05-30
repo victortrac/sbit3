@@ -4,6 +4,16 @@
     </head>
     <body>
         <h2>sbit3 is like pastebin for files.</h2>
+        <p>Download: <a href="http://sbit3.me/sbit3">http://sbit3.me/sbit3</a>
+        <pre>
+USAGE:
+1) Use sbit3 to upload the file:
+    user@localhost:~$ ./sbit3 your_file.zip
+    http://sbit3.me/d/aV8gt (link expires in 10 minutes)
+or to specify your own expiration time:
+    user@localhost:~$ ./sbit3 --expires 42 your_file.zip
+    http://sbit3.me/d/aSI38 (link expires in 42 minutes)
+        </pre>
         <p>Total files gone through sbit3 so far: {{ count }}</p>
         <p>Try it out on github: <a href="https://github.com/victortrac/sbit3">sbit3</a></p>
     </body>

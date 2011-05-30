@@ -10,17 +10,17 @@ curl http://sbit3.me/sbit3 -o [somewhere in your path]
 
 USAGE:
 1) Use sbit3 to upload the file:
-    shell $: ./sbit3 your_file.zip
+    user@localhost:~$ ./sbit3 your_file.zip
     http://sbit3.me/d/aV8gt (link expires in 10 minutes)
 or to specify your own expiration time:
-    shell $: ./sbit3 --expires 42 your_file.zip
+    user@localhost:~$ ./sbit3 --expires 42 your_file.zip
     http://sbit3.me/d/aSI38 (link expires in 42 minutes)
 
 2) Share the short URL with someone.
 If they use a command line, they'll need to pass curl the  -L option 
 to follow redirects and to specify a filename since curl doesn't 
 guess the filename like browsers ("-o output.zip"):
-    shell $: curl -L http://sbit3.me/d/aV8gt -o output.zip
+    user@localhost:~$ curl -L http://sbit3.me/d/aV8gt -o output.zip
 
 Server dependencies:
  * Python 2.6

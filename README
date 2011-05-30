@@ -1,9 +1,26 @@
-sbit3 is a tornado app and a client script that allows you to easily upload
+sbit3 is like pastebin for files.
+
+It is a tornado app and a client script that allows you to easily upload
 a file from any command line into Amazon's S3 service. It provides you 
 with a shorterned, time-limited URL that you can share to anyone.
 
-I created it because I often am SSH'd 2-3x into a private network and 
-wanted to easily pull out files, e.g. a log file or sql dump.
+INSTALL:
+Download the client to upload and share a file:
+curl http://sbit3.me/sbit3 -o [somewhere in your path]
+
+USAGE:
+1) Use sbit3 to upload the file:
+    shell $: ./sbit3 your_file.zip
+    http://sbit3.me/d/aV8gt (link expires in 10 minutes)
+or to specify your own expiration time:
+    shell $: ./sbit3 --expires 42 your_file.zip
+    http://sbit3.me/d/aSI38 (link expires in 42 minutes)
+
+2) Share the short URL with someone.
+If they use a command line, they'll need to pass curl the  -L option 
+to follow redirects and to specify a filename since curl doesn't 
+guess the filename like browsers ("-o output.zip"):
+    shell $: curl -L http://sbit3.me/d/aV8gt -o output.zip
 
 Server dependencies:
  * Python 2.6
@@ -21,13 +38,3 @@ TODO:
  * Add some error handling
  * S3 cleanup code once files are expired
  * Allow client-side encryption pre-uplaod
-
-Usage:
-1) Use sbit3_upload to upload the file:
-shell $: ./sbit3_upload your_file.zip
-http://sbit3.me/d/aV8gt
-
-2) Share the short URL with someone. If they use a command line, they'll
-need to pass curl the -L (follow redirects) and to specify a filename 
-since curl doesn't guess the filename like browsers ("-o output.zip"):
-shell $: curl -L http://sbit3.me/d/aV8gt -o output.zip

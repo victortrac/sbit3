@@ -75,7 +75,11 @@ if __name__ == "__main__":
         sys.exit(1)
 
     postform_url = options.server + "/u/" + str(options.expires)
-    postform = urllib2.urlopen(postform_url).read()
+    try:
+        postform = urllib2.urlopen(postform_url).read()
+    except urllib2.HTTPError, e:
+        print "sbit3 server error: %s" % e
+        sys.exit(1)
     formparser = FormParser()
     formparser.feed(postform)
 
@@ -107,6 +111,6 @@ if __name__ == "__main__":
     response = h.getresponse()
     redirected_url = response.getheader('location')
     if redirected_url:
-        print urllib2.urlopen(redirected_url).read()
+        print urllib2.urlopen(redirected_url).read() + " (expires in %s minutes)" % options.expires
     else:
-        print response.read()
+        print "Error: " + response.read()

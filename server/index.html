@@ -1,5 +1,15 @@
 <html>
     <head>
+        <script type="text/javascript">
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-263878-7']);
+          _gaq.push(['_trackPageview']);
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+        </script>
         <title>sbit3</title>
     </head>
     <body>
@@ -14,6 +24,7 @@ or to specify your own expiration time:
     user@localhost:~$ ./sbit3 --expires 42 your_file.zip
     http://sbit3.me/d/aSI38 (link expires in 42 minutes)
         </pre>
+        <p>Try out the unintended <a href="http://sbit3.me/u/10">web interface</a><p>
         <p>Total files gone through sbit3 so far: {{ count }}</p>
         <p>Try it out on github: <a href="https://github.com/victortrac/sbit3">sbit3</a></p>
     </body>

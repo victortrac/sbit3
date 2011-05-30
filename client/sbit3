@@ -70,7 +70,7 @@ if __name__ == "__main__":
     # Try to read file
     try:
         fp = open(filename, 'r')
-    except IOError as e:
+    except IOError, e:
         print "Unable to read file %s" % filename
         sys.exit(1)
 

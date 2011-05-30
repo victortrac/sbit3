@@ -102,7 +102,7 @@ if __name__ == "__main__":
     body = '\r\n'.join(r_payload)
     content_type = 'multipart/form-data; boundary=%s' % boundary
 
-    h = httplib.HTTPConnection(formparser.form['action'], 80)
+    h = httplib.HTTPSConnection(formparser.form['action'].lstrip('https://'))
     h.putrequest('POST', formparser.form['action'])
     h.putheader('content-type', content_type)
     h.putheader('content-length', str(len(body)))

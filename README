@@ -41,4 +41,4 @@ Download dependencies:
 TODO:
  * Add some error handling
  * S3 cleanup code once files are expired
- * Allow client-side encryption pre-uplaod
+ * Allow client-side encryption pre-upload

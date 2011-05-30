@@ -4,6 +4,10 @@ It is a tornado app and a client script that allows you to easily upload
 a file from any command line into Amazon's S3 service. It provides you 
 with a shorterned, time-limited URL that you can share to anyone.
 
+You can run the server on your own AWS account if you'd like. 
+As a server, sbit3 uses no local storage and only minimal amounts
+of CPU and RAM, as most S3 interactions are direct and not proxied.
+
 INSTALL:
 Download the client to upload and share a file:
 curl http://sbit3.me/sbit3 -o [somewhere in your path]

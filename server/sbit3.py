@@ -86,7 +86,10 @@ class DownloadHandler(tornado.web.RequestHandler):
         self.bucket = settings.bucket
 
     def get(self, shortUrl):
-        sdb_item = sdb_conn.get_key(shortUrl)
+        try:
+            sdb_item = sdb_conn.get_key(shortUrl)
+        except:
+            raise tornado.web.HTTPError(404)
         if sdb_item:
             s3_key_name = sdb_item[1]['key']
             s3_expiration = sdb_item[1]['expireTimestamp']

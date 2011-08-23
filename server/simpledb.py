@@ -49,12 +49,12 @@ class SimpleDBConnection(object):
         except Exception, e:
             raise(e)
 
-    def get_key(self, url):
+    def get_file(self, url):
         try:
             # Validate url against charspace
             if filter(lambda x: x not in self.charSpace, url):
                 raise Exception("Invalid characters in short URL")
-            rs = self.domain.select("SELECT * FROM `%s` where `shortUrl` = '%s'" %
+            rs = self.domain.select("SELECT * FROM `%s` WHERE `shortUrl` = '%s'" %
                             (settings.sdb_domain, url))
             results = []
             for item in rs:
@@ -66,6 +66,22 @@ class SimpleDBConnection(object):
                 return None
             else:
                 raise Exception("More than one matching result found. ShortURL collision.")
+        except Exception, e:
+            raise(e)
+
+    def get_key(self, s3key):
+        try:
+            rs = self.domain.select("SELECT * FROM `%s` WHERE `key` = '%s'" %
+                    (settings.sdb_domain, s3key))
+            results = []
+            for item in rs:
+                results.append((item.name, item))
+            if len(results) is 1:
+                return (results[0])
+            elif len(results) is 0:
+                return None
+            else:
+                raise Exception("More than one matching S3 key found. Error.")
         except Exception, e:
             raise(e)
 
@@ -93,7 +109,7 @@ class SimpleDBConnection(object):
                     _url = ""
                     while (len(_url) <= length):
                         _url = _url + self.charSpace[int(random() * len(self.charSpace))]
-                    _key = self.get_key(_url)
+                    _key = self.get_file(_url)
                     if _key == None:
                         return _url
                     else:

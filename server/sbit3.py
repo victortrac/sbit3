@@ -13,11 +13,13 @@ import settings
 from simpledb import SimpleDBConnection
 from s3 import S3Connection
 
+
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
         rs = sdb_conn.domain.select("SELECT count(*) FROM `%s`" % settings.sdb_domain)
         count = [item for item in rs][0]['Count']
         self.render("index.html", count=count)
+
 
 class PostHandler(tornado.web.RequestHandler):
     def _generate_policy_doc(self, conditions, expiration=None):
@@ -62,6 +64,7 @@ class PostHandler(tornado.web.RequestHandler):
                                  policy_document=policy_document,
                                  signature=signature)
 
+
 class GenerateUrlHandler(tornado.web.RequestHandler):
     def __init__(self, application, request, **kwargs):
         super(GenerateUrlHandler, self).__init__(application, request, **kwargs)
@@ -80,14 +83,14 @@ class GenerateUrlHandler(tornado.web.RequestHandler):
         _short_url = sdb_conn.add_file(item, _bucket, _key, _etag)
         self.write(settings.site_url + '/d/' + _short_url)
 
+
 class DownloadHandler(tornado.web.RequestHandler):
     def __init__(self, application, request, **kwargs):
         super(DownloadHandler, self).__init__(application, request, **kwargs)
-        self.bucket = settings.bucket
 
     def get(self, shortUrl):
         try:
-            sdb_item = sdb_conn.get_key(shortUrl)
+            sdb_item = sdb_conn.get_file(shortUrl)
         except:
             raise tornado.web.HTTPError(404)
         if sdb_item:
@@ -102,11 +105,24 @@ class DownloadHandler(tornado.web.RequestHandler):
         else:
             raise tornado.web.HTTPError(404)
 
+
+class CronHandler(tornado.web.RequestHandler):
+    def get(self):
+        # Get all s3 items
+        all_keys = s3_conn.bucket.get_all_keys()
+        for key in all_keys:
+            key_record = sdb_conn.get_key(key)
+            if not (key_record and datetime.datetime.now() < key_record[1].expireTimestamp):
+                #key.delete()
+                pass
+
+
 application = tornado.web.Application([
     (r"/", MainHandler),
     (r"/u/(\d+)", PostHandler),
     (r"/f/(.*)", GenerateUrlHandler),
     (r"/d/(.*)", DownloadHandler),
+    (r"/cron$", CronHandler),
 ])
 
 

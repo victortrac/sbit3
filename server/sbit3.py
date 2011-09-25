@@ -5,6 +5,7 @@ import datetime
 import base64
 import hmac, hashlib
 import uuid
+import logging
 
 import tornado.ioloop
 import tornado.web
@@ -13,6 +14,8 @@ import settings
 from simpledb import SimpleDBConnection
 from s3 import S3Connection
 
+logging.basicConfig(filename=settings.logfile, format='%(asctime)s %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S', level=logging.DEBUG)
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -32,6 +35,7 @@ class PostHandler(tornado.web.RequestHandler):
                        { "success_action_redirect" : conditions["success_action_redirect"] } ]
         conditions_json = json.dumps({ "expiration" : expiration.strftime("%Y-%m-%dT%H:%M:%SZ"),
                                        "conditions" : conditions })
+        logging.debug("Policy doc generated: {0}".format(conditions_json))
         return base64.b64encode(conditions_json)
 
     def _sign_policy(self, policy):

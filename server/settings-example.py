@@ -12,3 +12,5 @@ site_port = 8080
 # SimpleDB
 sdb_domain = "YOUR_SDB_DOMAIN_FOR_sbit3"
 
+#Logging
+logfile = "/var/log/sbit3.log"
